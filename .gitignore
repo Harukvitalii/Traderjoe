@@ -1,0 +1,6 @@
+/venv
+project/.env
+.env
+project/__pycache__
+project/modules/arequests_helper/__pycache__
+txt
