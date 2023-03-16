@@ -1,8 +1,13 @@
 from pprint import pp, pprint
-import json
-REPORT_TOKEN = '5739820723:AAG5PxkMVnogJ1_RIz9riTlWGPA6zeWLK6U'
-BOT_API      = '5511110722:AAFQnuBa7YzQwnz9BErqR0Bx613bcFidfTs'
-ADMIN        =  682382931
+import json,os 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+REPORT_TOKEN = os.getenv('REPORT_TOKEN')
+BOT_API      = os.getenv('BOT_API') # another report token 
+ADMIN        = os.getenv('ADMIN')
 
 
 

@@ -4,12 +4,8 @@ import requests
 
 from datetime import timedelta
 from datetime import datetime 
-from proxies  import proxies
 
-from storage  import my_address
 from storage  import ADMIN, BOT_API
-from storage  import REPORT_TOKEN
-from storage  import contract_marketplace, ABI_marketplace
 from traderjoe import web_driver_avax
 
 from pprint   import pp
@@ -22,7 +18,6 @@ from web3_driver              import WEB3_DRIVER_AVAX
 
 
 
-proxy_count = len(proxies)
 load_dotenv()
 
 
