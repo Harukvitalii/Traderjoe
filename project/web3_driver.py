@@ -116,7 +116,7 @@ class WEB3_DRIVER_AVAX:
             # 'value': int(self.web3.toWei(amount_AVAX, 'ether'))
             }
         # создаём транзакцию
-        #TO DO  FIND A WAY TO GET IDS WITH MY LIQUIDITY OR WRITE IT ON THE ADDLIQUIDITY FUNCION IN FILE OR WHATEVER
+        #TO DO  FIND A WAY TO GET IDS WITH MY LIQUIDITY OR WRITE IT ON THE ADDLIQUIDITY FUNCION IN FILE OR WHATEVER 
         all_bins_with_my_liquidity = [i for i in range(8376134,8376181+1)] 
         transaction = self.contract_complate.functions.collectFees(
             self.address,  #my adress
