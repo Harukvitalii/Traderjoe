@@ -104,8 +104,33 @@ class WEB3_DRIVER_AVAX:
         return distributionX, distributionY 
     
     
-    def remove_liquidity_pool(): 
+    def remove_liquidity_pool(self,): 
         pass 
+    
+    def collectFees(self,): 
+        dict_transaction = {
+            'chainId': self.web3.eth.chain_id,
+            'from': self.address,
+            'gasPrice': int(self.web3.eth.gasPrice*1),
+            'nonce': self.web3.eth.getTransactionCount(self.address),
+            # 'value': int(self.web3.toWei(amount_AVAX, 'ether'))
+            }
+        # создаём транзакцию
+        #TO DO  FIND A WAY TO GET IDS WITH MY LIQUIDITY OR WRITE IT ON THE ADDLIQUIDITY FUNCION IN FILE OR WHATEVER
+        all_bins_with_my_liquidity = [i for i in range(8376134,8376181+1)] 
+        transaction = self.contract_complate.functions.collectFees(
+            self.address,  #my adress
+            all_bins_with_my_liquidity
+            
+        ).buildTransaction(dict_transaction)
+        print(transaction)
+        # exit()
+        signed_txn = self.web3.eth.account.signTransaction(transaction, self.private)
+    # Отправляем, смотрим тут https://testnet.bscscan.com/
+        txn_hash = self.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        timeout  = 60  # maximum time to wait for transaction receipt
+        hash = self.wait_transaction(txn_hash, timeout)
+        return hash
 
     
     def swap_trader_joe_avax_to_alt(self, amount_AVAX): 
