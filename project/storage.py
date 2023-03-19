@@ -9,6 +9,7 @@ REPORT_TOKEN = os.getenv('REPORT_TOKEN')
 BOT_API      = os.getenv('BOT_API') # another report token 
 ADMIN        = os.getenv('ADMIN')
 
+chromedriver_path = 'drivers/chromedriver'
 
 
 contract_marketplace = '0xE3Ffc583dC176575eEA7FD9dF2A7c65F7E23f4C3'
@@ -18,6 +19,12 @@ my_address           = '0xb13d2e1b6a388e07ac1afebf3b7c1d7c924667e4'
 USDT_ADRESS          = '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'
 
 
+COIN_ADRESSES = {
+    'AVAX'  : {"address":"0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", "zeroes": 18},
+    "USDt"  : {"address":"0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7", "zeroes": 6}, 
+    'USDC'  : {"address":'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', "zeroes": 6}, 
+    'USDC.e': {"address":"0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664", "zeroes": 6}
+}
 
 
 

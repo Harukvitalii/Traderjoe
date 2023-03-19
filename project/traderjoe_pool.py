@@ -47,12 +47,15 @@ class TraderJoe(AREQUEST_MANAGER):
     
     def get_liquidity_position(self,): 
         link = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2"
-        data = {"query":"\n  query liquidityPositions(\n    $first: Int! = 1000\n    $user: Bytes!\n    $lbPairAddr: String!\n  ) {\n    liquidityPositions(\n      first: $first\n      where: { lbPair: $lbPairAddr, user: $user, binsCount_gt: 0 }\n    ) {\n      id\n      binsCount\n      userBinLiquidities(first: 1000, where: { liquidity_gt: 0 }) {\n        liquidity\n        binId\n      }\n      user {\n        id\n      }\n      lbPair {\n        ...lbPairFields\n      }\n    }\n  }\n  \n  fragment lbPairFields on LBPair {\n    id\n    name\n    binStep\n    baseFeePct\n    tokenXPrice\n    tokenYPrice\n    tokenX {\n      id\n      symbol\n      decimals\n    }\n    tokenY {\n      id\n      symbol\n      decimals\n    }\n    reserveX\n    reserveY\n    totalValueLockedUSD\n    volumeUSD\n    timestamp\n  }\n\n",
-                "variables":{"lbPairAddr":"0xdf3e481a05f58c387af16867e9f5db7f931113c9","user":"0xb13d2e1b6a388e07ac1afebf3b7c1d7c924667e4"},"operationName":"liquidityPositions"}
-
+        data = {
+            "query":"\n  query liquidityPositions(\n    $first: Int! = 1000\n    $user: Bytes!\n    $lbPairAddr: String!\n  ) {\n    liquidityPositions(\n      first: $first\n      where: { lbPair: $lbPairAddr, user: $user, binsCount_gt: 0 }\n    ) {\n      id\n      binsCount\n      userBinLiquidities(first: 1000, where: { liquidity_gt: 0 }) {\n        liquidity\n        binId\n      }\n      user {\n        id\n      }\n      lbPair {\n        ...lbPairFields\n      }\n    }\n  }\n  \n  fragment lbPairFields on LBPair {\n    id\n    name\n    binStep\n    baseFeePct\n    tokenXPrice\n    tokenYPrice\n    tokenX {\n      id\n      symbol\n      decimals\n    }\n    tokenY {\n      id\n      symbol\n      decimals\n    }\n    reserveX\n    reserveY\n    totalValueLockedUSD\n    volumeUSD\n    timestamp\n  }\n\n",
+            "variables":{"lbPairAddr":"0x1d7a1a79e2b4ef88d2323f3845246d24a3c20f1d",
+                         "user":"0xb13d2e1b6a388e07ac1afebf3b7c1d7c924667e4"},
+            "operationName":"liquidityPositions"}
         json_resp = requests.post(link, json=data)
         resp = json_resp.json()
-        print(resp)
+        liq_p = resp["data"]["liquidityPositions"]["userBinLiquidities"]
+        return liq_p
         
     async def get_bin_ids(self, *args): 
         link = 'https://barn.traderjoexyz.com/v1/bin/avalanche/0xdF3E481a05F58c387Af16867e9F5dB7f931113c9/8376158?filterBy=1d&radius=100'

@@ -1,1 +1,13 @@
+chagne file env (this) to .env and enter your config
+
 MY_PRIVATE_KEY  =  "key"
+
+MY_SECRET       =  "words"
+
+
+REPORT_TOKEN = 'telegram token'
+BOT_API      = 'telegram token'
+ADMIN        =  adminid
+
+MY_SECRET_TEST = "words for tests"
+METAMASK_PASSW = "psw to metamask extension" 
