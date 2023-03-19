@@ -9,6 +9,7 @@ REPORT_TOKEN = os.getenv('REPORT_TOKEN')
 BOT_API      = os.getenv('BOT_API') # another report token 
 ADMIN        = os.getenv('ADMIN')
 
+chromedriver_path = 'drivers/chromedriver'
 
 
 contract_marketplace = '0xE3Ffc583dC176575eEA7FD9dF2A7c65F7E23f4C3'

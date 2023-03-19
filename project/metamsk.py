@@ -3,14 +3,19 @@ import time
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pyperclip
 import os
 import urllib.request
+import logging
 
 EXTENSION_PATH = os.getcwd() + '/MetaMask.crx'
 
 EXTENSION_ID = 'nkbihfbeogaeaoehlefnkodbefgpgknn'
+
+logging.basicConfig(level=logging.CRITICAL, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 def downloadMetamaskExtension():
@@ -21,7 +26,6 @@ def downloadMetamaskExtension():
 
 
 def launchSeleniumWebdriver(driverPath):
-    print('path', EXTENSION_PATH)
     chrome_options = Options()
     chrome_options.add_extension(EXTENSION_PATH)
     global driver
@@ -32,39 +36,78 @@ def launchSeleniumWebdriver(driverPath):
 
 
 def metamaskSetup(recoveryPhrase, password):
-    driver.switch_to.window(driver.window_handles[0])
+    driver.switch_to.window(driver.window_handles[1])
 
-    button_element = driver.find_element(By.CSS_SELECTOR, "button[data-testid='onboarding-import-wallet']")
-    print(button_element)
-    button_element.click()
-    # driver.find_element(By.XPATH, '//button[text()="Import wallet"]').click()
-    driver.find_element_by_xpath('//button[text()="No Thanks"]').click()
+    driver.find_element(By.XPATH, "//button[text()='Import an existing wallet']").click()
+    driver.find_element(By.XPATH, '//button[text()="No thanks"]').click()
+    
 
-    time.sleep(5)
-
+    time.sleep(0.1)
+ 
     pyperclip.copy(recoveryPhrase)
     
-    input = driver.find_elements_by_xpath('//*[@id="import-srp__srp-word-0"]')
-    input[0].send_keys(Keys.CONTROL,'v')
-    input1 = driver.find_elements_by_xpath('//*[@id="password"]')
-    input1[0].send_keys(password)
-    input2 = driver.find_elements_by_xpath('//*[@id="confirm-password"]')
-    input2[0].send_keys(password)
+    input = driver.find_element(By.XPATH, '//*[@id="import-srp__srp-word-0"]')
+    input.send_keys(Keys.CONTROL,'v')
+    driver.find_element(By.XPATH, '//button[text()="Confirm Secret Recovery Phrase"]').click()
+    input1 = driver.find_element(By.XPATH, '//input[@data-testid="create-password-new"]')
+    input1.send_keys(password)
+    input2 = driver.find_element(By.XPATH, '//input[@data-testid="create-password-confirm"]')
+    input2.send_keys(password)
     
-    driver.find_element_by_xpath('//*[@id="create-new-vault__terms-checkbox"]').click()
-    driver.find_element_by_xpath('//button[text()="导入"]').click()
+    driver.find_element(By.XPATH, '//input[@data-testid="create-password-terms"]').click()
+    driver.find_element(By.XPATH,'//button[text()="Import my wallet"]').click()
 
-    time.sleep(5)
+    time.sleep(0.1)
 
-    driver.find_element_by_xpath('//button[text()="全部完成"]').click()
-    time.sleep(2)
+    driver.find_element(By.XPATH,'//button[text()="Got it"]').click()
+    time.sleep(0.1)
 
     # closing the message popup after all done metamask screen
-    driver.find_element_by_xpath('//*[@id="popover-content"]/div/div/section/div[1]/div/button').click()
-    time.sleep(2)
-    print("钱包导入完成")
+    driver.find_element(By.XPATH,'//button[text()="Next"]').click()
+    time.sleep(0.5)
+    driver.find_element(By.XPATH,'//button[text()="Done"]').click()
+    time.sleep(0.1)
     print("Wallet has been imported successfully")
-    time.sleep(10)
+    time.sleep(1)
+
+
+def addNetwork(network_name, rpc_url, chain_id, currency_symbol):
+    """Add new network
+
+    :param network_name: Network name
+    :type network_name: String
+    :param rpc_url: RPC URL
+    :type rpc_url: String
+    :param chain_id: Chain ID
+    :type chain_id: String
+    :param currency_symbol: Currency symbol
+    :type currency_symbol: String
+    """
+    try: 
+        driver.find_element(By.CSS_SELECTOR, 'div.app-header__network-component-wrapper > div').click()
+        time.sleep(0.2)
+        driver.find_element(By.XPATH,'//button[text()="Add network"]').click()
+        time.sleep(0.2)
+        driver.find_element(By.XPATH,'//h6[text()="Add a network manually"]').click()
+        
+        inputs = driver.find_elements(By.XPATH, '//input')
+
+        inputs[1].send_keys(network_name)
+        inputs[2].send_keys(rpc_url)
+        inputs[3].send_keys(chain_id)
+        inputs[4].send_keys(currency_symbol)
+        time.sleep(0.2)
+        driver.find_element(By.XPATH, '//button[text()="Save"]').click()
+        time.sleep(3)
+        driver.find_element(By.XPATH, '//button[text()="Got it"]').click()
+        time.sleep(0.1)
+        driver.find_element(By.XPATH, '//i[@class="fa fa-times"]').click()
+        
+    except: 
+        print('Failed to add network')
+        return False
+    print(f"Added Network {network_name}")
+    return True
 
 
 def changeMetamaskNetwork(networkName):
@@ -100,23 +143,27 @@ def changeMetamaskNetwork(networkName):
 
 
 def connectToWebsite():
-    time.sleep(3)
+    time.sleep(1.5)
 
     driver.execute_script("window.open('');")
     driver.switch_to.window(driver.window_handles[1])
 
     driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
-    time.sleep(5)
-    driver.execute_script("window.scrollBy(0, document.body.scrollHeight)")
-    time.sleep(3)
-    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[2]/div[4]/div[2]/button[2]').click()
-    time.sleep(1)
-    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[2]/div[2]/div[2]/footer/button[2]').click()
-    time.sleep(3)
+    time.sleep(4)
+    # driver.execute_script("window.scrollBy(0, document.body.scrollHeight)")
+    driver.find_element(By.XPATH, '//button[text()="Next"]').click()
+    time.sleep(0.15)
+    driver.find_element(By.XPATH, '//button[text()="Connect"]').click()
+    time.sleep(0.15)
+    
+    # driver.find_element(By.XPATH, '//*[@id="app-content"]/div/div[3]/div/div[2]/div[4]/div[2]/button[2]').click()
+    # time.sleep(1)
+    # driver.find_element(By.XPATH, '//*[@id="app-content"]/div/div[3]/div/div[2]/div[2]/div[2]/footer/button[2]').click()
+    # time.sleep(3)
     print('Site connected to metamask')
     print(driver.window_handles)
-    driver.switch_to.window(driver.window_handles[0])
-    time.sleep(3)
+    driver.switch_to.window(driver.window_handles[2])
+    time.sleep(0.1)
 
 
 def confirmApprovalFromMetamask():
