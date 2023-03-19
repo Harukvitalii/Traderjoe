@@ -8,6 +8,6 @@ Overall, the software will provide an efficient and effective solution to trader
 
 ## TODO
 
-- [ ] Getting size of staked coins in pool for remove_liquidity_pool function
+- [x] Getting size of staked coins in pool for remove_liquidity_pool function
 - [ ] remove half of the pool liquidity
 - [ ] add liquitidy to pool using custom configuration
