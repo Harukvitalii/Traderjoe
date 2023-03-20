@@ -10,7 +10,9 @@ import os
 import urllib.request
 import logging
 
+# EXTENSION_PATH = 'metamask-chrome-10.11.2.zip'
 EXTENSION_PATH = os.getcwd() + '/MetaMask.crx'
+
 
 EXTENSION_ID = 'nkbihfbeogaeaoehlefnkodbefgpgknn'
 
@@ -21,54 +23,50 @@ logging.basicConfig(level=logging.CRITICAL, format='%(asctime)s - %(levelname)s 
 def downloadMetamaskExtension():
     print('Setting up metamask extension please wait...')
 
-    url = 'https://xord-testing.s3.amazonaws.com/selenium/10.0.2_0.crx'
-    urllib.request.urlretrieve(url, os.getcwd() + '/metamaskExtension.crx')
+    # url = 'https://xord-testing.s3.amazonaws.com/selenium/10.0.2_0.crx'
+    # urllib.request.urlretrieve(url, os.getcwd() + '/metamaskExtension.crx')
 
 
 def launchSeleniumWebdriver(driverPath):
     chrome_options = Options()
     chrome_options.add_extension(EXTENSION_PATH)
     global driver
+    
     driver = webdriver.Chrome(options=chrome_options, executable_path=driverPath)
+    global wait 
+    wait = WebDriverWait(driver, 10)
     time.sleep(5)
     print("Extension has been loaded")
-    return driver
+    return driver, wait 
 
 
 def metamaskSetup(recoveryPhrase, password):
     driver.switch_to.window(driver.window_handles[1])
 
-    driver.find_element(By.XPATH, "//button[text()='Import an existing wallet']").click()
-    driver.find_element(By.XPATH, '//button[text()="No thanks"]').click()
+    wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Import an existing wallet']"))).click()
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="No thanks"]'))).click()
     
 
-    time.sleep(0.1)
- 
     pyperclip.copy(recoveryPhrase)
     
-    input = driver.find_element(By.XPATH, '//*[@id="import-srp__srp-word-0"]')
+    input = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="import-srp__srp-word-0"]')))
     input.send_keys(Keys.CONTROL,'v')
-    driver.find_element(By.XPATH, '//button[text()="Confirm Secret Recovery Phrase"]').click()
-    input1 = driver.find_element(By.XPATH, '//input[@data-testid="create-password-new"]')
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="Confirm Secret Recovery Phrase"]'))).click()
+    input1 = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@data-testid="create-password-new"]')))
     input1.send_keys(password)
-    input2 = driver.find_element(By.XPATH, '//input[@data-testid="create-password-confirm"]')
+    input2 = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@data-testid="create-password-confirm"]')))
     input2.send_keys(password)
     
-    driver.find_element(By.XPATH, '//input[@data-testid="create-password-terms"]').click()
-    driver.find_element(By.XPATH,'//button[text()="Import my wallet"]').click()
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@data-testid="create-password-terms"]'))).click()
+    wait.until(EC.element_to_be_clickable((By.XPATH,'//button[text()="Import my wallet"]'))).click()
 
-    time.sleep(0.1)
 
-    driver.find_element(By.XPATH,'//button[text()="Got it"]').click()
-    time.sleep(0.1)
+    wait.until(EC.element_to_be_clickable((By.XPATH,'//button[text()="Got it!"]'))).click()
 
     # closing the message popup after all done metamask screen
-    driver.find_element(By.XPATH,'//button[text()="Next"]').click()
-    time.sleep(0.5)
-    driver.find_element(By.XPATH,'//button[text()="Done"]').click()
-    time.sleep(0.1)
+    wait.until(EC.element_to_be_clickable((By.XPATH,'//button[text()="Next"]'))).click()
+    wait.until(EC.element_to_be_clickable((By.XPATH,'//button[text()="Done"]'))).click()
     print("Wallet has been imported successfully")
-    time.sleep(1)
 
 
 def addNetwork(network_name, rpc_url, chain_id, currency_symbol):
@@ -84,11 +82,10 @@ def addNetwork(network_name, rpc_url, chain_id, currency_symbol):
     :type currency_symbol: String
     """
     try: 
-        driver.find_element(By.CSS_SELECTOR, 'div.app-header__network-component-wrapper > div').click()
-        time.sleep(0.2)
-        driver.find_element(By.XPATH,'//button[text()="Add network"]').click()
-        time.sleep(0.2)
-        driver.find_element(By.XPATH,'//h6[text()="Add a network manually"]').click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//i[@class="fa fa-times"]'))).click()
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.app-header__network-component-wrapper > div'))).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH,'//button[text()="Add network"]'))).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH,'//h6[text()="Add a network manually"]'))).click()
         
         inputs = driver.find_elements(By.XPATH, '//input')
 
@@ -96,12 +93,8 @@ def addNetwork(network_name, rpc_url, chain_id, currency_symbol):
         inputs[2].send_keys(rpc_url)
         inputs[3].send_keys(chain_id)
         inputs[4].send_keys(currency_symbol)
-        time.sleep(0.2)
-        driver.find_element(By.XPATH, '//button[text()="Save"]').click()
-        time.sleep(3)
-        driver.find_element(By.XPATH, '//button[text()="Got it"]').click()
-        time.sleep(0.1)
-        driver.find_element(By.XPATH, '//i[@class="fa fa-times"]').click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="Save"]'))).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="Got it"]'))).click()
         
     except: 
         print('Failed to add network')
@@ -143,18 +136,14 @@ def changeMetamaskNetwork(networkName):
 
 
 def connectToWebsite():
-    time.sleep(1.5)
 
     driver.execute_script("window.open('');")
     driver.switch_to.window(driver.window_handles[1])
 
     driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
-    time.sleep(4)
     # driver.execute_script("window.scrollBy(0, document.body.scrollHeight)")
-    driver.find_element(By.XPATH, '//button[text()="Next"]').click()
-    time.sleep(0.15)
-    driver.find_element(By.XPATH, '//button[text()="Connect"]').click()
-    time.sleep(0.15)
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="Next"]'))).click()
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//button[text()="Connect"]'))).click()
     
     # driver.find_element(By.XPATH, '//*[@id="app-content"]/div/div[3]/div/div[2]/div[4]/div[2]/button[2]').click()
     # time.sleep(1)
