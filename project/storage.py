@@ -7,7 +7,7 @@ load_dotenv()
 
 REPORT_TOKEN = os.getenv('REPORT_TOKEN')
 BOT_API      = os.getenv('BOT_API') # another report token 
-ADMIN        = os.getenv('ADMIN')
+ADMIN        = os.getenv('ADMIN')   # admin id
 
 chromedriver_path = 'drivers/chromedriver'
 
